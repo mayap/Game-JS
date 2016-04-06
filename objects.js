@@ -9,3 +9,6 @@ var cursors;
 var speed;
 var maxSpeed = 260;
 var playerCoins = 0;
+
+var maxBombs = 5;
+var distancePassed=0;

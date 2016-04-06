@@ -5,11 +5,24 @@ var mineRoom = {
     mapBottomLayer: '',
     mapWallsLayer: '',
     mapCubesLayer: '',
-    bomb: '',
+    //bomb: '',
+    bombs:'',
     droppingBomb: false,
     bombButton: '',
 
-    pandas:'',
+    //enemies:'',
+    enemy: '',
+
+    enemy_walking_speed: 120,
+    enemy_walking_distance: 544,
+    enemy_direction: +1,
+    enemy_axis: 'x',
+    enemy_previous_position: '',
+
+    killEnemy1: false,
+
+    bombLabel: '',
+    energyLabel: '',
 
     preload: function() {
 
@@ -37,6 +50,10 @@ var mineRoom = {
 
         game.load.spritesheet('enemy', 'assets/EnemySpriteSheet2.png', 30, 30);
 
+        game.load.spritesheet('characterEnemy', 'assets/organi11.png', 32, 32, 12);
+
+
+
     },
 
 
@@ -44,8 +61,13 @@ var mineRoom = {
         var button = game.add.button(game.width - 200, 20, 'button', this.back);
         //680 x 20
 
-        var energyLabel = game.add.text(game.width - 200, 160, 'Energy: ' + energy,
+        this.energyLabel = game.add.text(game.width - 200, 160, 'Energy: ' + energy,
             {font: '25px Arial', fill: '#fff'});
+
+        this.bombLabel = game.add.text(game.width - 200, 230, 'Bombs: ' + maxBombs,
+            {font: '25px Arial', fill: '#fff'});
+
+
 
         this.map = game.add.tilemap('map');
 /*
@@ -74,24 +96,47 @@ var mineRoom = {
         player.animations.add('up', [9, 10, 11], 10, true);
         player.animations.add('down', [0, 1, 2], 10, true);
 
-        this.pandas = game.add.physicsGroup();
+        this.enemies = game.add.physicsGroup();
 
 
-        var c = this.pandas.create(270,185, 'enemy');
+        var c = this.enemies.create(270,185, 'enemy');
         c.body.mass = 0;
         c.body.immovable = true;
 
 
-        var d = this.pandas.create(260, 190, 'enemy');
+        var d = this.enemies.create(260, 190, 'enemy');
 
         d.body.mass = 0;
+
+
+        this.enemy = game.add.sprite(32, 32, 'characterEnemy');
+        this.enemy.animations.add('left', [3, 4, 5], 10, true);
+        this.enemy.animations.add('right', [6, 7, 8], 10, true);
+        this.enemy.animations.add('up', [9, 10, 11], 10, true);
+        this.enemy.animations.add('down', [0, 1, 2], 10, true);
+
+
 
         this.bombs = game.add.group();
         this.bombs.enableBody = true;
 
-        game.physics.enable(player, Phaser.Physics.ARCADE);
 
+
+        this.enemy_previous_position = (this.enemy_axis === "x") ? this.enemy.x : this.enemy.y
+
+        // bomb.visible = false;
+
+        game.physics.enable(player, Phaser.Physics.ARCADE);
+        game.physics.enable(this.enemy, Phaser.Physics.ARCADE);
         game.camera.follow(player);
+
+
+        if (this.enemy_axis === "x") {
+            this.enemy.body.velocity.x = this.enemy_direction  * this.enemy_walking_speed;
+        } else {
+            this.enemy.body.velocity.y = this.enemy_direction  * this.enemy_walking_speed;
+        }
+
 
         cursors = game.input.keyboard.createCursorKeys();
         this.bombButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -103,12 +148,44 @@ var mineRoom = {
     update: function () {
         game.physics.arcade.collide(player, this.mapWallsLayer);
   /*      game.physics.arcade.collide(player, this.mapCubesLayer);*/
+        game.physics.arcade.overlap(this.enemy, this.bombs, this.collectCoin, null, this);
 
         player.body.velocity.x = 0;
         player.body.velocity.y = 0;
 
 
-        if (game.physics.arcade.collide(player, this.pandas, this.collisionHandler, this.processHandler, this))
+
+
+        var new_position;
+
+        if (this.enemy.body.velocity.y > 0) {
+            // walking down
+            this.enemy.animations.play("down");
+        } else if (this.enemy.body.velocity.y < 0) {
+            // walking down
+            this.enemy.animations.play("up");
+        }
+
+        if (this.enemy.body.velocity.x < 0) {
+            // walking left
+            // enemy.scale.setTo(-1, 1);
+            this.enemy.animations.play("left");
+        } else if (this.enemy.body.velocity.x > 0) {
+            // walking right
+            //  enemy.scale.setTo(1, 1);
+            this.enemy.animations.play("right");
+        }
+
+        new_position = (this.enemy_axis === "x") ? this.enemy.x : this.enemy.y;
+        if (Math.abs(new_position - this.enemy_previous_position) >= this.enemy_walking_distance) {
+            //this.switch_direction();
+             this.switch_direction_Square();
+        }
+
+
+
+
+        if (game.physics.arcade.collide(player, this.enemies, this.collisionHandler, this.processHandler, this))
         {
             console.log('boom');
         }
@@ -116,34 +193,51 @@ var mineRoom = {
 
         var direction;
 
-        if (cursors.up.isDown) {
+        if (cursors.up.isDown && energy>0) {
+            distancePassed++;
             player.body.velocity.y = -200;
             player.animations.play('up');
             direction = 'up';
 
-        } else if (cursors.down.isDown) {
+        } else if (cursors.down.isDown && energy>0) {
+            distancePassed++;
             player.body.velocity.y = 200;
             player.animations.play('down');
             direction = 'down';
 
-        } else if (cursors.left.isDown) {
+        } else if (cursors.left.isDown && energy>0 ) {
+            distancePassed++;
             player.body.velocity.x = -200;
             player.animations.play('left');
             direction = 'left';
 
-        } else if (cursors.right.isDown){
+        } else if (cursors.right.isDown && energy>0){
+            distancePassed++;
             player.body.velocity.x = 200;
             player.animations.play('right');
             direction = 'right';
         } else {
             player.animations.stop();
         }
+if(distancePassed>100){
+    distancePassed=0;
+    if(energy>0){
+        this.energyLabel.setText("Energy: "+ (--energy));
+    }else{
+        player.animations.stop();
+    }
+}
+        var bomb1;
 
         if (this.bombButton.isDown && !this.dropping_bomb) {
-
+            if(maxBombs>0){
+            bomb1 = this.bombs.create(player.body.x, player.body.y-32, 'bomb');
           /*  this.bomb = game.add.sprite(player.body.x, player.body.y-32, 'bomb');*/
-            this.bomb = game.add.sprite(player.body.x, player.body.y, 'bomb');
-            var anim = this.bomb.animations.add('explode', [0, 1, 2, 3, 4, 5, 6, 7, 8], 30, true);
+            //this.bomb = game.add.sprite(player.body.x, player.body.y, 'bomb');
+            var anim = bomb1.animations.add('explode', [0, 1, 2, 3, 4, 5, 6, 7, 8], 30, true);
+
+            maxBombs -= 1;
+            this.bombLabel.setText('Bombs: ' + maxBombs);
 
             anim.onStart.add(this.animationStarted, this);
             anim.onLoop.add(this.animationLooped, this);
@@ -154,8 +248,8 @@ var mineRoom = {
             this.dropping_bomb = true;
 
             console.log(anim);
-            console.log(this.bomb);
-
+            console.log(bomb1);
+            }
         }
 
         if (!this.bombButton.isDown && this.dropping_bomb) {
@@ -214,5 +308,70 @@ var mineRoom = {
         return true;
 
     },
+
+
+
+
+
+
+
+    collectCoin: function(player, coin) {
+
+        var a = coin.animations.currentFrame.index;
+        if (a == 8) {
+            player.scale.setTo(1,1);
+            playerX = player.body.x;
+            playerY= player.body.y;
+            bombX = coin.body.x;
+            bombY = coin.body.y;
+            if (playerX-bombX<=50 && playerY-bombY<=50 && playerX-bombX>=0 && playerY-bombY>=0 ){
+                player.kill();
+            }
+            //coin.kill();
+
+        } else {
+            // coin.kill();
+            // player.kill();
+            this.killEnemy1 = true;
+        }
+    },
+
+    switch_direction_Square: function() {
+
+        if (this.enemy_axis === "x") {
+            this.enemy_previous_position = this.enemy.y;
+            this.enemy_axis='y';
+            this.enemy.body.velocity.x = 0;
+            this.enemy.body.velocity.y = (this.enemy_direction  * this.enemy_walking_speed);
+        } else {
+
+            this.enemy_previous_position = this.enemy.x;
+            this.enemy_axis='x';
+            this.enemy.body.velocity.y  = 0;
+            this.enemy_direction*=-1;
+            this.enemy.body.velocity.x = (this.enemy_direction  * this.enemy_walking_speed);
+
+        }
+    },
+
+    switch_direction: function() {
+
+        if (this.enemy_axis === "x") {
+            this.enemy_previous_position = this.enemy.x;
+            //enemy.body.velocity.x = 0;
+            this.enemy.body.velocity.x *= -1;
+        } else {
+            this.enemy_previous_position = this.enemy.y;
+            //enemy.body.velocity.y  = 0;
+            this.enemy.body.velocity.y *= -1;
+        }
+    },
+
+
+
+
+
+
+
 
 }

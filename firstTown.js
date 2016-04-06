@@ -88,7 +88,8 @@ var firstTown = {
 
         game.load.image('speedBoost', 'assets/speedBoost.png');
 
-        game.load.image('coin', 'assets/coin.png');
+        //game.load.image('coin', 'assets/coin.png');
+        game.load.spritesheet('coin', 'assets/coin.png', 32, 32);
     },
 
     create: function () {
@@ -195,6 +196,10 @@ var firstTown = {
 
         this.coins = game.add.group();
         this.coins.enableBody = true;
+
+
+
+
         var coin1 = this.coins.create(240, 600, 'coin');
         var coin2 = this.coins.create(240, 640, 'coin');
         var coin3 = this.coins.create(240, 680, 'coin');
@@ -213,7 +218,8 @@ var firstTown = {
         var coin12 = this.coins.create(910, 880, 'coin');
 
 
-
+        this.coins.callAll('animations.add', 'animations', 'spin', [0, 1, 2, 3, 4, 5], 10, true);
+        this.coins.callAll('animations.play', 'animations', 'spin');
 
 
 
