@@ -96,7 +96,7 @@ var mineRoom = {
         player.animations.add('up', [9, 10, 11], 10, true);
         player.animations.add('down', [0, 1, 2], 10, true);
 
-        this.enemies = game.add.physicsGroup();
+        /*this.enemies = game.add.physicsGroup();
 
 
         var c = this.enemies.create(270,185, 'enemy');
@@ -106,7 +106,7 @@ var mineRoom = {
 
         var d = this.enemies.create(260, 190, 'enemy');
 
-        d.body.mass = 0;
+        d.body.mass = 0;*/
 
 
         this.enemy = game.add.sprite(32, 32, 'characterEnemy');

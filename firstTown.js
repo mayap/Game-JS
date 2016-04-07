@@ -27,9 +27,10 @@ var firstTown = {
 
     coins: '',
 
-    pandas:'',
+    mouse:'',
 
     speedBoosted: false,
+    coinsText: '',
     /*player : (function(){
         var player;
         return player;
@@ -88,16 +89,20 @@ var firstTown = {
 
         game.load.image('invisible', 'assets/key1.png');
 
-        game.load.image('speedBoost', 'assets/speedBoost.png');
+    /*    game.load.image('speedBoost', 'assets/speedBoost.png');*/
+        game.load.image('speedBoost', 'assets/elixir.png');
 
         //game.load.image('coin', 'assets/coin.png');
         game.load.spritesheet('coin', 'assets/coin.png', 32, 32);
+
+        game.load.image('singleCoin', 'assets/singleCoin.png');
+
+
     },
 
     create: function () {
 
         game.physics.startSystem(Phaser.Physics.ARCADE);
-
 
         this.map = game.add.tilemap('map');
         this.map.addTilesetImage('Town', 'tilesetImg');
@@ -139,31 +144,24 @@ var firstTown = {
         //this.enemies.enableBody = true;
 
 
+        this.coinsText = game.add.text(1200, 45, playerCoins,
+            {font: '25px Arial', fill: '#000'});
 
 
 
 
 
+       /* this.mouse = game.add.physicsGroup();
 
-        this.pandas = game.add.physicsGroup();
 
-
-            var c = this.pandas.create(350,360, 'enemy');
+            var c = this.mouse.create(350,360, 'enemy');
             c.body.mass = 0;
         c.body.immovable = true;
 
 
-         var d = this.pandas.create(320, 360, 'enemy');
+         var d = this.mouse.create(320, 360, 'enemy');
 
-        d.body.mass = 0;
-
-
-
-
-
-
-
-
+        d.body.mass = 0;*/
 
 
         cursors = game.input.keyboard.createCursorKeys();
@@ -193,11 +191,12 @@ var firstTown = {
         this.invisible = game.add.group();
         this.invisible.enableBody = true;
         var invis = this.invisible.create(610, 120,'invisible');
-        invis.visible = true;
+        invis.visible = false;
 
         this.speedBoosts = game.add.group();
         this.speedBoosts.enableBody = true;
         var speedBoost1 = this.speedBoosts.create(200, 300, 'speedBoost');
+        var speedBoost3 = this.speedBoosts.create(600, 290, 'speedBoost');
         var speedBoost2 = this.speedBoosts.create(1150, 320, 'speedBoost');
 
             localStorage.setItem('speedBoost1', speedBoost1);
@@ -206,6 +205,7 @@ var firstTown = {
         this.coins = game.add.group();
         this.coins.enableBody = true;
 
+        var singleCoin = this.coins.create(1160, 40, 'coin');
 
 
 
@@ -225,6 +225,10 @@ var firstTown = {
 
         var coin11 = this.coins.create(910, 800, 'coin');
         var coin12 = this.coins.create(910, 880, 'coin');
+
+        var coin12 = this.coins.create(400, 300, 'coin');
+        var coin12 = this.coins.create(460, 300, 'coin');
+        var coin12 = this.coins.create(520, 300, 'coin');
 
 
         localStorage.setItem('coin1', coin1);
@@ -270,14 +274,14 @@ var firstTown = {
 
 
 
-        if (game.physics.arcade.collide(player, this.pandas, this.collisionHandler, this.processHandler, this))
+        if (game.physics.arcade.collide(player, this.mouse, this.collisionHandler, this.processHandler, this))
         {
             console.log('boom');
         }
 
 
 
-
+        this.coinsText.setText(playerCoins);
 
 
 
@@ -340,7 +344,7 @@ var firstTown = {
     },
 
      enterDoor: function() {
-         if (!this.keyCollected) {
+         if (this.keyCollected) {
              if(localStorage.getItem('speed') == '120'){
 
                  localStorage.setItem('speed', speed);
@@ -353,12 +357,7 @@ var firstTown = {
 
              }
 
-
-             if (this.speedBoosted) {
-
-             }
-
-            // game.state.start('mineRoom');
+             game.state.start('mineRoom');
          }
     },
 speeder1:'',
@@ -380,7 +379,7 @@ speeder1:'',
 
         speedBoost.kill();
         if (speed <= maxSpeed - 20) {
-            speed += 20;
+            speed += 30;
         }
         this.speedBoosted++;
 

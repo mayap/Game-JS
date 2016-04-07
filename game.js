@@ -7,11 +7,10 @@ var game = new Phaser.Game(window.innerWidth * window.devicePixelRatio, window.i
 
 game.state.add('boot', bootState);
 game.state.add('load', loadState);
-game.state.add('menu', menuState);
+/*game.state.add('menu', menuState);*/
+game.state.add('startScreen', startScreen);
 game.state.add('firstTown', firstTown);
 game.state.add('mineRoom', mineRoom);
-game.state.add('startScreen', startScreen);
-game.state.add('play', playState);
+/*game.state.add('play', playState);*/
 game.state.add('win', winState);
-
 game.state.start('boot');

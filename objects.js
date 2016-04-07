@@ -6,7 +6,7 @@ var player;
 var map;
 var cursors;
 
-var speed = 120;
+var speed = 35;
 var speedBoostLeft;
 var maxSpeed = 260;
 var playerCoins = 0;
