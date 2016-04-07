@@ -13,4 +13,5 @@ game.state.add('firstTown', firstTown);
 game.state.add('mineRoom', mineRoom);
 /*game.state.add('play', playState);*/
 game.state.add('win', winState);
+
 game.state.start('boot');

@@ -78,7 +78,8 @@ var firstTown = {
         game.load.image('tilesetImg', 'assets/magecity.png');
         game.load.image('additionalTiles', 'assets/magecity1.png');
 
-        game.load.spritesheet('character', 'assets/chars2.png', 48, 48, 36);
+       // game.load.spritesheet('character', 'assets/chars2.png', 48, 48, 36);
+        game.load.spritesheet('character', 'assets/chars1.png', 48, 48, 12);
 
         //game.load.spritesheet('enemy', 'assets/heroes.png', 34, 33, 48);
         game.load.image('darkMonster', 'assets/darkMonster.png');
@@ -130,9 +131,14 @@ var firstTown = {
         //300 x 200
         //za coins: 235 x 550
 
-        player.animations.add('left', [8, 9, 10], 10, true);
+        /*player.animations.add('left', [8, 9, 10], 10, true);
         player.animations.add('right', [16, 17, 18], 10, true);
         player.animations.add('up', [24, 25, 26], 10, true);
+        player.animations.add('down', [0, 1, 2], 10, true); */
+
+        player.animations.add('left', [3, 4, 5], 10, true);
+        player.animations.add('right', [6, 7, 8], 10, true);
+        player.animations.add('up', [9, 10, 11], 10, true);
         player.animations.add('down', [0, 1, 2], 10, true);
 
         game.physics.enable(player, Phaser.Physics.ARCADE);
@@ -177,16 +183,10 @@ var firstTown = {
         this.keys.enableBody = true;
         var key = this.keys.create(670, 620, 'key1');
 
-
-            localStorage.setItem('key', key);
-
-
         this.scrolls = game.add.group();
 
         this.scrolls.enableBody = true;
         var scroll = this.scrolls.create(240, 950, 'scroll');
-
-            localStorage.setItem('scroll', scroll);
 
         this.invisible = game.add.group();
         this.invisible.enableBody = true;
@@ -198,9 +198,6 @@ var firstTown = {
         var speedBoost1 = this.speedBoosts.create(200, 300, 'speedBoost');
         var speedBoost3 = this.speedBoosts.create(600, 290, 'speedBoost');
         var speedBoost2 = this.speedBoosts.create(1150, 320, 'speedBoost');
-
-            localStorage.setItem('speedBoost1', speedBoost1);
-            localStorage.setItem('speedBoost2', speedBoost2);
 
         this.coins = game.add.group();
         this.coins.enableBody = true;
@@ -229,22 +226,6 @@ var firstTown = {
         var coin12 = this.coins.create(400, 300, 'coin');
         var coin12 = this.coins.create(460, 300, 'coin');
         var coin12 = this.coins.create(520, 300, 'coin');
-
-
-        localStorage.setItem('coin1', coin1);
-        localStorage.setItem('coin2', coin2);
-        localStorage.setItem('coin3', coin3);
-        localStorage.setItem('coin4', coin4);
-        localStorage.setItem('coin5', coin5);
-        localStorage.setItem('coin6', coin6);
-        localStorage.setItem('coin7', coin7);
-        localStorage.setItem('coin8', coin8);
-        localStorage.setItem('coin9', coin9);
-        localStorage.setItem('coin10', coin10);
-        localStorage.setItem('coin11', coin11);
-        localStorage.setItem('coin12', coin12);
-
-
 
         this.coins.callAll('animations.add', 'animations', 'spin', [0, 1, 2, 3, 4, 5], 10, true);
         this.coins.callAll('animations.play', 'animations', 'spin');
