@@ -46,7 +46,7 @@ var mineRoom = {
 
         game.load.image('button', 'assets/go-back-button.png');
 
-        game.load.spritesheet('bomb', 'assets/BombExploding.png', 32, 64,13);
+        game.load.spritesheet('bomb', 'assets/BombExploding.png', 32, 64, 13);
 
         game.load.spritesheet('enemy', 'assets/EnemySpriteSheet2.png', 30, 30);
 

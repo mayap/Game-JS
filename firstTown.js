@@ -28,6 +28,8 @@ var firstTown = {
     coins: '',
 
     pandas:'',
+
+    speedBoosted: false,
     /*player : (function(){
         var player;
         return player;
@@ -115,7 +117,7 @@ var firstTown = {
         this.mapGroundDecorations.resizeWorld();
         this.mapTopDecorations.resizeWorld();
 
-        speed = 120;
+       // speed = 120;
 
 
 
@@ -135,8 +137,6 @@ var firstTown = {
         //this.enemies = game.add.group();
 
         //this.enemies.enableBody = true;
-
-
 
 
 
@@ -179,20 +179,29 @@ var firstTown = {
         this.keys.enableBody = true;
         var key = this.keys.create(670, 620, 'key1');
 
+
+            localStorage.setItem('key', key);
+
+
         this.scrolls = game.add.group();
 
         this.scrolls.enableBody = true;
         var scroll = this.scrolls.create(240, 950, 'scroll');
 
+            localStorage.setItem('scroll', scroll);
+
         this.invisible = game.add.group();
         this.invisible.enableBody = true;
         var invis = this.invisible.create(610, 120,'invisible');
-        invis.visible = false;
+        invis.visible = true;
 
         this.speedBoosts = game.add.group();
         this.speedBoosts.enableBody = true;
         var speedBoost1 = this.speedBoosts.create(200, 300, 'speedBoost');
         var speedBoost2 = this.speedBoosts.create(1150, 320, 'speedBoost');
+
+            localStorage.setItem('speedBoost1', speedBoost1);
+            localStorage.setItem('speedBoost2', speedBoost2);
 
         this.coins = game.add.group();
         this.coins.enableBody = true;
@@ -216,6 +225,21 @@ var firstTown = {
 
         var coin11 = this.coins.create(910, 800, 'coin');
         var coin12 = this.coins.create(910, 880, 'coin');
+
+
+        localStorage.setItem('coin1', coin1);
+        localStorage.setItem('coin2', coin2);
+        localStorage.setItem('coin3', coin3);
+        localStorage.setItem('coin4', coin4);
+        localStorage.setItem('coin5', coin5);
+        localStorage.setItem('coin6', coin6);
+        localStorage.setItem('coin7', coin7);
+        localStorage.setItem('coin8', coin8);
+        localStorage.setItem('coin9', coin9);
+        localStorage.setItem('coin10', coin10);
+        localStorage.setItem('coin11', coin11);
+        localStorage.setItem('coin12', coin12);
+
 
 
         this.coins.callAll('animations.add', 'animations', 'spin', [0, 1, 2, 3, 4, 5], 10, true);
@@ -307,6 +331,7 @@ var firstTown = {
     collectKeys: function(player, key) {
         key.kill();
         this.keyCollected = true;
+
     },
 
     collectScrolls: function(player, scroll) {
@@ -316,20 +341,55 @@ var firstTown = {
 
      enterDoor: function() {
          if (!this.keyCollected) {
-             game.state.start('mineRoom');
+             if(localStorage.getItem('speed') == '120'){
+
+                 localStorage.setItem('speed', speed);
+
+             }
+
+             else if(speed > localStorage.getItem('speed')){
+
+                 localStorage.setItem('speed',speed);
+
+             }
+
+
+             if (this.speedBoosted) {
+
+             }
+
+            // game.state.start('mineRoom');
          }
     },
-
+speeder1:'',
     tookSpeedBoost: function (player, speedBoost) {
+        console.log(speedBoost.body.x);
+        this.speeder1 = speedBoost.body.x;
+
+        if(localStorage.getItem('speedBoost') == '120'){
+
+            localStorage.setItem('speed', speed);
+
+        }
+
+        else if(speed > localStorage.getItem('speed')){
+
+            localStorage.setItem('speed',speed);
+
+        }
+
         speedBoost.kill();
         if (speed <= maxSpeed - 20) {
             speed += 20;
         }
+        this.speedBoosted++;
+
     },
 
     takeCoin: function (player, coin) {
         coin.kill();
         playerCoins += 10;
+        localStorage.setItem('playerCoins', playerCoins);
     },
 
     processHandler: function (player, veg) {
