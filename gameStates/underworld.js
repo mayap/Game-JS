@@ -1,15 +1,15 @@
 var energy = 20;
-var bombs;
 
-var mineRoom = {
+
+
+var underworld = {
     map: '',
     mapBottomLayer: '',
     mapWallsLayer: '',
-    mapCubesLayer: '',
+    mapUpLayer: '',
+    bomb1: '',
     droppingBomb: false,
     bombButton: '',
-
-    bomb1: '',
 
     enemy1:'',
     enemy2:'',
@@ -19,7 +19,7 @@ var mineRoom = {
     bombLabel: '',
     energyLabel: '',
 
-    scroll2:'',
+    smallMaps:'',
 
     preload: function() {
 
@@ -38,16 +38,21 @@ var mineRoom = {
         this.bombLabel = game.add.text(game.width - 200, 230, 'Bombs: ' + maxBombs,
             {font: '25px Arial', fill: '#fff'});
 
-        this.map = game.add.tilemap('mapMine');
+        coinsText = game.add.text(game.width - 200, 300, 'Coins: ' + playerCoins,
+            {font: '25px Arial', fill: '#fff'});
 
-        this.map.addTilesetImage('tilea4', 'tilea4');
-        this.map.addTilesetImage('mine-floor', 'mine-floor');
+
+        this.map = game.add.tilemap('mapUnderworld');
+
+        this.map.addTilesetImage('rpgtileset', 'rpgtileset');
 
         this.mapBottomLayer = this.map.createLayer('bottom');
         this.mapWallsLayer = this.map.createLayer('walls');
+        this.mapUpLayer = this.map.createLayer('up');
 
         this.mapBottomLayer.resizeWorld();
         this.mapWallsLayer.resizeWorld();
+        this.mapUpLayer.resizeWorld();
 
         player = game.add.sprite(285, 185, 'character2');
 
@@ -56,34 +61,51 @@ var mineRoom = {
         player.animations.add('up', [9, 10, 11], 10, true);
         player.animations.add('down', [0, 1, 2], 10, true);
 
-        this.scroll2 = game.add.group();
-        this.scroll2.enableBody = true;
-
-        bombs = game.add.group();
-        bombs.enableBody = true;
-
         this.enemy1 = new Enemy(game, 32, 32, 'characterEnemy', 120, 544, +1, 'x', '');
         game.add.existing(this.enemy1);
 
         this.enemy2 = new Enemy(game, 32, 32, 'characterEnemy', 140, 544, +1, 'x', '');
         game.add.existing(this.enemy2);
 
+        this.smallMaps = game.add.group();
+        this.smallMaps.enableBody = true;
+
+        bombs = game.add.group();
+        bombs.enableBody = true;
+
+        coins = game.add.group();
+        coins.enableBody = true;
+/*
+        coins.callAll('animations.add', 'animations', 'spin', [0, 1, 2, 3, 4, 5], 10, true);*/
+
         game.physics.enable(player, Phaser.Physics.ARCADE);
+
         game.camera.follow(player);
 
         cursors = game.input.keyboard.createCursorKeys();
         this.bombButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
         this.map.setCollisionByExclusion([], true, this.mapWallsLayer);
+        this.map.setCollisionByExclusion([], true, this.mapUpLayer);
     },
 
     update: function () {
         game.physics.arcade.collide(player, this.mapWallsLayer);
+        game.physics.arcade.collide(player, this.mapUpLayer);
 
-        game.physics.arcade.overlap(player, this.scroll2, this.collectScroll, null, this);
+        game.physics.arcade.overlap(player, this.smallMaps, this.collectScroll, null, this);
+
+        game.physics.arcade.overlap(player, coins, takeCoin, null, this);
+
+        coinsText.setText('Coins: ' + playerCoins);
 
         player.body.velocity.x = 0;
         player.body.velocity.y = 0;
+
+        if (game.physics.arcade.overlap(player, this.smallMaps, this.collectScroll, this))
+        {
+            this.smallMaps.kill();
+        }
 
         if (cursors.up.isDown && energy>0) {
             distancePassed++;
@@ -119,21 +141,22 @@ var mineRoom = {
             }
         }
 
+
         if (this.bombButton.isDown && !this.dropping_bomb) {
             if(maxBombs > 0){
-            this.bomb1 = bombs.create(player.body.x, player.body.y-32, 'bomb');
-            var anim = this.bomb1.animations.add('explode', [0, 1, 2, 3, 4, 5, 6, 7, 8], 30, true);
+                this.bomb1 = bombs.create(player.body.x, player.body.y-32, 'bomb');
+                var anim = this.bomb1.animations.add('explode', [0, 1, 2, 3, 4, 5, 6, 7, 8], 30, true);
 
-            maxBombs -= 1;
-            this.bombLabel.setText('Bombs: ' + maxBombs);
+                maxBombs -= 1;
+                this.bombLabel.setText('Bombs: ' + maxBombs);
 
-            anim.onStart.add(this.animationStarted, this);
-            anim.onLoop.add(this.animationLooped, this);
-            anim.onComplete.add(this.animationStopped, this);
+                anim.onStart.add(this.animationStarted, this);
+                anim.onLoop.add(this.animationLooped, this);
+                anim.onComplete.add(this.animationStopped, this);
 
-            anim.play(10, false);
+                anim.play(10, false);
 
-            this.dropping_bomb = true;
+                this.dropping_bomb = true;
 
             }
         }
@@ -169,17 +192,30 @@ var mineRoom = {
 
     },
 
+    functionToCall: function () {
+        //bomb.animations.stop();
+    },
+
     back: function() {
         game.state.start('firstTown');
         console.log('got back');
     },
 
     processHandler: function (player, veg) {
+
         return true;
+
     },
 
     collisionHandler: function(player, veg) {
+        /*
+         if (veg.frame == 17)
+         {
+         veg.kill();
+         }*/
+
         return true;
+
     },
 
     collectScroll: function (player, scroll) {
@@ -187,3 +223,46 @@ var mineRoom = {
     },
 
 }
+
+function collisionPlayerEnemy(player, enemy) {
+     enemy.body.immovable = true;
+     player.kill();
+};
+
+var identificator = 0;
+
+function collectCoin(player, coin) {
+
+     var a = coin.animations.currentFrame.index;
+     if (a == 8) {
+         player.scale.setTo(1,1);
+         playerX = player.body.x;
+         playerY= player.body.y;
+         bombX = coin.body.x;
+         bombY = coin.body.y;
+         if (playerX-bombX<=50 && playerY-bombY<=50 && playerX-bombX>=0 && playerY-bombY>=0 ){
+         player.kill();
+
+         identificator++;
+         releasedObjects(identificator);
+         /*var singleScroll2 = underworld.smallMaps.create(playerX, playerY, 'smallMap');*/
+     }
+     //coin.kill();
+
+     } else {
+         // coin.kill();
+         // player.kill();
+         //this.killEnemy1 = true;
+     }
+};
+
+function releasedObjects(identificator) {
+   /* room = this;*/
+    for (var i = 1; i <= identificator; i++) {
+        if (identificator == 1) {
+            var singleScroll2 = underworld.smallMaps.create(playerX, playerY, 'smallMap');
+        } else if (identificator == 2) {
+            var coin1 = coins.create(playerX, playerY, 'coin');
+        }
+    }
+};

@@ -5,7 +5,9 @@ var logo;
 var startScreen = {
 
     preload: function () {
-        this.load.image('button', 'assets/play_button.png');
+        game.stage.backgroundColor = '#679BCA';
+
+        this.load.image('buttonPlay', 'assets/play_button.png');
 
      //   game.load.image('background', 'assets/background.jpg');
         game.load.image('logo', 'assets/logo3.png');
@@ -20,7 +22,7 @@ var startScreen = {
             {font: '50px Arial', fill: '#fff'});*/
         logo = this.add.image(450, 180, 'logo');
 
-        var button = this.game.add.button(530, 280, 'button', this.start);
+        var button = this.game.add.button(530, 280, 'buttonPlay', this.start);
 
         island = game.add.sprite(850, 270, 'island');
         castle = game.add.sprite(0, 60, 'castle');
